@@ -1,25 +1,4 @@
-import base64
-from PyQt5.QtWidgets import (QMainWindow, QApplication, QPushButton, QTextEdit, QVBoxLayout, 
-                             QWidget, QHBoxLayout, QDockWidget, QAction, QMenu, QMessageBox)
-from PyQt5.QtCore import QThread
-from voice_generator import VoiceGenerator
-import sys
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt, QSize
-from styles import dark_theme_style_sidebar, light_theme_style_sidebar
-from sidebar import Sidebar
-from apisidebar import APISidebar
-from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtCore import pyqtSignal
-import fitz
-import qdarktheme
-import requests
-import yaml
-from docx import Document
-import openai
-import os
-main_ui = base64.b64encode(b"""
+
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QPushButton, QTextEdit, QVBoxLayout, 
                              QWidget, QHBoxLayout, QDockWidget, QAction, QMenu, QMessageBox)
 from PyQt5.QtCore import QThread
@@ -41,6 +20,7 @@ from docx import Document
 import openai
 import os
 import sys
+from tutorial import TutorialSlideshow
 
 def resource_path(relative_path):
     try:
@@ -66,6 +46,7 @@ class MainWindow(QMainWindow): # Inherit from QMainWindow
         self.apply_initial_theme()
         self.config = self.load_config()
         print(self.config)
+        self.promptTutorial()
     def open_save_file_dialog(self):
         options = QFileDialog.Options()
         file_filter = "Audio Files (*.mp3 *.opus *.aac *.flac)"
@@ -89,7 +70,7 @@ class MainWindow(QMainWindow): # Inherit from QMainWindow
         if not is_valid:
             QMessageBox.warning(self, "API Key Validation Failed", message)
             return
-        if self.config.get("api_key") != "":
+        if self.config.get("api_key") != "" and is_valid:
             text = self.text_edit.toPlainText() # Get the text from the text edit widget
             file_path = self.open_save_file_dialog()
             if file_path:
@@ -350,7 +331,7 @@ class MainWindow(QMainWindow): # Inherit from QMainWindow
     def verify_license(self, license_key):
         url = "https://api.gumroad.com/v2/licenses/verify"
         data = {
-            "product_id": "bXY9aPoQUJgqcwuCkCdaVw==",
+            "product_id": "3sxDk3l4Sw5lCPCB7Ig-ew==",
             "license_key": license_key
         }
         response = requests.post(url, data=data)
@@ -402,18 +383,29 @@ class MainWindow(QMainWindow): # Inherit from QMainWindow
     
     def save_api_dialouge(self):
         api_key = self.api_sidebar.api_key_input.text()
-
-        if api_key:
+        message = ""
+        is_valid, message = self.validate_api_key(api_key)
+        if api_key and is_valid:
             # self.enable_app()
             self.api_alert_success()
         else:
-            self.api_alert_fail()
-    def api_alert_fail(self):
-        QMessageBox.critical(self, "Failed!", "API key not saved.")
+            self.api_alert_fail(message)
+    def api_alert_fail(self,message):
+        if message:
+            QMessageBox.critical(self, "Failed!", message)
+        else:
+            QMessageBox.critical(self, "Failed!", "API key not saved.")
 
     def api_alert_success(self):
         QMessageBox.information(self, "Saved!", "API key saved successfully.")
-        
+    def promptTutorial(self):
+        reply = QMessageBox.question(self, 'Tutorial', 'Do you want to see the tutorial?', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.showTutorial()
+
+    def showTutorial(self):
+        self.tutorialDialog = TutorialSlideshow(self, self)
+        self.tutorialDialog.show()
 
     
 
@@ -421,5 +413,4 @@ class MainWindow(QMainWindow): # Inherit from QMainWindow
 if __name__ == "__main__": # If running this file directly
     app = QApplication(sys.argv) # Create an application
     main_win = MainWindow() # Create a main window
-    sys.exit(app.exec_()) # Execute the application""")
-run_main_ui = exec(base64.b64decode(main_ui))
+    sys.exit(app.exec_())

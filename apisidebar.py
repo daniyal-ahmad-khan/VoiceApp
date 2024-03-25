@@ -1,20 +1,4 @@
-import base64
 from PyQt5.QtWidgets import QWidget,QPushButton, QVBoxLayout, QHBoxLayout,\
-    QCheckBox, QComboBox, QLabel, QToolTip, QFrame, QSpacerItem, QSizePolicy,\
-        QLineEdit
-from PyQt5.QtCore import Qt, pyqtSignal
-from qtwidgets import AnimatedToggle
-from PyQt5.QtGui import QFont
-from styles import api_key_button_style,dark_theme_style_sidebar
-import pyqtgraph as pg
-import qdarktheme
-import yaml
-from styles import dark_theme_style_sidebar, light_theme_style_sidebar
-from toggle_switch import PyQtSwitch
-import sys
-import os
-
-api_sidebar_ui = base64.b64encode(b"""from PyQt5.QtWidgets import QWidget,QPushButton, QVBoxLayout, QHBoxLayout,\
     QCheckBox, QComboBox, QLabel, QToolTip, QFrame, QSpacerItem, QSizePolicy,\
         QLineEdit
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -202,5 +186,4 @@ class APISidebar(QWidget):
         # self.dark_mode_toggle.setStyleSheet(theme_styles["toggle_switch"])
         self.theme_label.setStyleSheet(theme_styles["label"])
         self.save_api_key_button.setStyleSheet(theme_styles["api_button"])
-        self.save_license_key_button.setStyleSheet(theme_styles["api_button"])""")
-run_api_sidebar_ui = exec(base64.b64decode(api_sidebar_ui))
+        self.save_license_key_button.setStyleSheet(theme_styles["api_button"])

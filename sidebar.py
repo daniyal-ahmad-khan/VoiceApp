@@ -1,14 +1,4 @@
-import base64
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout,\
-    QComboBox, QLabel,  QFrame, QSpacerItem, QSizePolicy, QPushButton
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QPixmap, QIcon
-from styles import dark_theme_style_sidebar, light_theme_style_sidebar
-from toggle_switch import PyQtSwitch
-import sys
-import os
-
-sidebar_ui = base64.b64encode(b"""from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout,\
     QComboBox, QLabel,  QFrame, QSpacerItem, QSizePolicy, QPushButton
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPixmap, QIcon
@@ -253,5 +243,3 @@ class Sidebar(QWidget):
         # self.toggle_switch.setStyleSheet(theme_styles["toggle_switch"])
         self.char_count_card.setStyleSheet(theme_styles["char_card"])
         self.char_count_label.setStyleSheet(theme_styles["char_count"])
-""")
-run_sidebar_ui = exec(base64.b64decode(sidebar_ui))
