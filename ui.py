@@ -46,7 +46,8 @@ class MainWindow(QMainWindow): # Inherit from QMainWindow
         self.apply_initial_theme()
         self.config = self.load_config()
         print(self.config)
-        self.promptTutorial()
+        if self.config.get('first_startup', True):
+            self.promptTutorial()
     def open_save_file_dialog(self):
         options = QFileDialog.Options()
         file_filter = "Audio Files (*.mp3 *.opus *.aac *.flac)"
@@ -102,7 +103,7 @@ class MainWindow(QMainWindow): # Inherit from QMainWindow
     def initUI(self):
         
         # self.setStyleSheet(main_window_style)  # Background color for the main window
-
+        self.config = self.load_config()
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
 
@@ -184,7 +185,8 @@ class MainWindow(QMainWindow): # Inherit from QMainWindow
         self.show()
         self.setGeometry(100, 100, 800, 600)
         self.setWindowTitle("Voice Generation App")
-        self.implement_verification_initial()
+        if self.config.get('first_startup', False):
+            self.implement_verification_initial()
         self.api_sidebar.save_license_key_button.clicked.connect(self.implement_verification)
         self.api_sidebar.save_api_key_button.clicked.connect(self.save_api_dialouge)
         
@@ -380,7 +382,9 @@ class MainWindow(QMainWindow): # Inherit from QMainWindow
         # Read configuration from YAML file
         with open(config_path, 'r') as file:
             return yaml.safe_load(file)
-    
+    def save_config(self, config):
+        with open(config_path, 'w') as file:
+            yaml.safe_dump(config, file)
     def save_api_dialouge(self):
         api_key = self.api_sidebar.api_key_input.text()
         message = ""
@@ -402,6 +406,10 @@ class MainWindow(QMainWindow): # Inherit from QMainWindow
         reply = QMessageBox.question(self, 'Tutorial', 'Do you want to see the tutorial?', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             self.showTutorial()
+        else:
+            config = self.load_config()
+            config['first_startup'] = False
+            self.save_config(config)
 
     def showTutorial(self):
         self.tutorialDialog = TutorialSlideshow(self, self)

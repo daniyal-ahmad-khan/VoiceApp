@@ -75,10 +75,13 @@ class TutorialSlideshow(QDialog):
         self.label.setText("Thank you for choosing our app.")
     def closeTutorial(self):
         self.highlightNone()  # Ensure all highlights are removed
+        config = self.main_window.load_config()
+        config['first_startup'] = False
+        self.main_window.save_config(config)
         self.close()
     def highlightSettingsButton(self):
         # Define the size you want for your icon
-        icon_width = 50 
+        icon_width = 55 
         icon_height = 50
         
         # Path to your settings icon
@@ -97,7 +100,7 @@ class TutorialSlideshow(QDialog):
 
     def highlightUploadButton(self):
         # Define the size you want for your icon
-        icon_width = 50 
+        icon_width = 55
         icon_height = 50
         
         # Path to your settings icon
@@ -144,7 +147,7 @@ class TutorialSlideshow(QDialog):
     def highlightSaveLicenseKeyButton(self):
         # self.label.setText("After entering your license key, press this button to save it.")
         icon_width = 200 
-        icon_height = 40
+        icon_height = 45
         
         # Path to your settings icon
         settings_icon_path = resource_path(imgs_path + 'license_key.png')
@@ -160,7 +163,7 @@ class TutorialSlideshow(QDialog):
     def highlightSaveAPIKeyButton(self):
          # self.label.setText("After entering your license key, press this button to save it.")
         icon_width = 200 
-        icon_height = 40
+        icon_height = 45
         
         # Path to your settings icon
         settings_icon_path = resource_path(imgs_path + 'api_key.png')
