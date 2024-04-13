@@ -23,7 +23,38 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 # Use these paths in your application
-config_path = resource_path('config.yaml')
+
+imgs_path = resource_path('imgs/')
+
+def ensure_directory_exists(path):
+    """Ensure that a directory exists."""
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+def create_initial_config_if_missing(file_path):
+    """Create the initial config.yaml if it does not exist."""
+    if not os.path.isfile(file_path):
+        initial_config = {
+            'api_key': 'sk-dasda',
+            'char_count': 0,
+            'first_startup': True,
+            'license_key': 'A-B-C-D'
+        }
+        with open(file_path, 'w') as file:
+            yaml.dump(initial_config, file, default_flow_style=False)
+
+def persistent_path(relative_path):
+    """Resolve path for writable files ensuring persistence across sessions."""
+    app_dir = os.path.join(os.path.expanduser("~"), ".VoiceApp")
+    ensure_directory_exists(app_dir)
+    
+    config_file_path = os.path.join(app_dir, relative_path)
+    create_initial_config_if_missing(config_file_path)
+    
+    return config_file_path
+
+# Use this to get the path to your config.yaml
+config_path = persistent_path('config.yaml')
 
 
 

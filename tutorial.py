@@ -4,6 +4,7 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtGui import QPixmap
 import os
 import sys
+import yaml
 def resource_path(relative_path):
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
@@ -14,8 +15,27 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 # Use these paths in your application
-config_path = resource_path('config.yaml')
+
 imgs_path = resource_path('imgs/')
+
+def persistent_path(relative_path):
+    """Resolve path for writable files ensuring persistence across sessions."""
+    # Choose a directory name that is unique to your application
+    app_dir = os.path.join(os.path.expanduser("~"), ".VoiceApp")
+    if not os.path.exists(app_dir):
+        os.makedirs(app_dir)
+        if not os.path.exists(os.path.join(app_dir, relative_path)):
+        # If not, create the file with the initial settings
+            initial_config = {
+                'api_key': 'sk-dasda',
+                'char_count': 0,
+                'first_startup': True,
+                'license_key': 'A-B-C-D'
+            }
+            with open(os.path.join(app_dir, relative_path), 'w') as file:
+                yaml.dump(initial_config, file, default_flow_style=False)
+    return os.path.join(app_dir, relative_path)
+config_path = persistent_path('config.yaml')
 
 class TutorialSlideshow(QDialog):
     def __init__(self, parent=None, main_window=None):

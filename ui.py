@@ -1,6 +1,6 @@
 
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QPushButton, QTextEdit, QVBoxLayout, 
-                             QWidget, QHBoxLayout, QDockWidget, QAction, QMenu, QMessageBox)
+                             QWidget, QHBoxLayout, QDockWidget, QMessageBox)
 from PyQt5.QtCore import QThread
 from voice_generator import VoiceGenerator
 import sys
@@ -32,8 +32,38 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 # Use these paths in your application
-config_path = resource_path('config.yaml')
+
 imgs_path = resource_path('imgs/')
+
+def ensure_directory_exists(path):
+    """Ensure that a directory exists."""
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+def create_initial_config_if_missing(file_path):
+    """Create the initial config.yaml if it does not exist."""
+    if not os.path.isfile(file_path):
+        initial_config = {
+            'api_key': 'sk-dasda',
+            'char_count': 0,
+            'first_startup': True,
+            'license_key': 'A-B-C-D'
+        }
+        with open(file_path, 'w') as file:
+            yaml.dump(initial_config, file, default_flow_style=False)
+
+def persistent_path(relative_path):
+    """Resolve path for writable files ensuring persistence across sessions."""
+    app_dir = os.path.join(os.path.expanduser("~"), ".VoiceApp")
+    ensure_directory_exists(app_dir)
+    
+    config_file_path = os.path.join(app_dir, relative_path)
+    create_initial_config_if_missing(config_file_path)
+    
+    return config_file_path
+
+# Use this to get the path to your config.yaml
+config_path = persistent_path('config.yaml')
 
 class MainWindow(QMainWindow): # Inherit from QMainWindow
     themeChanged = pyqtSignal(str)
@@ -185,7 +215,7 @@ class MainWindow(QMainWindow): # Inherit from QMainWindow
         self.show()
         self.setGeometry(100, 100, 800, 600)
         self.setWindowTitle("Voice Generation App")
-        if self.config.get('first_startup', False):
+        if not self.config.get('first_startup', False):
             self.implement_verification_initial()
         self.api_sidebar.save_license_key_button.clicked.connect(self.implement_verification)
         self.api_sidebar.save_api_key_button.clicked.connect(self.save_api_dialouge)
@@ -333,7 +363,7 @@ class MainWindow(QMainWindow): # Inherit from QMainWindow
     def verify_license(self, license_key):
         url = "https://api.gumroad.com/v2/licenses/verify"
         data = {
-            "product_id": "3sxDk3l4Sw5lCPCB7Ig-ew==",
+            "product_id": "bXY9aPoQUJgqcwuCkCdaVw==",
             "license_key": license_key
         }
         response = requests.post(url, data=data)
