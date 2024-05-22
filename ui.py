@@ -72,6 +72,9 @@ class MainWindow(QMainWindow):
     def stop_thread(self):
         if self.voice_generator:
             self.voice_generator.stop()
+            if self.thread and self.thread.isRunning():
+                self.thread.quit()
+                self.thread.wait()
 
     def on_thread_finished(self):
         print("Thread finished")  # Debug print
@@ -112,7 +115,6 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "No File Selected", "Please select a file to save the output.")
         else:
             QMessageBox.warning(self, "No API Key Found", "Please set your OpenAI API key.")
-
     def initUI(self):
         self.config = self.load_config()
         central_widget = QWidget(self)

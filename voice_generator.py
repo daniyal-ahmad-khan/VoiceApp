@@ -151,3 +151,4 @@ class VoiceGenerator(QObject):
             stream.write(combined_data[start:end])
         stream.stop()
         self.finished.emit()
+
