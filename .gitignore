@@ -1,2 +1,6 @@
-
-VoiceApp.zip
+.venv/
+__pycache__/
+build/
+dist/
+VoiceApp.spec
+.DS_Store
